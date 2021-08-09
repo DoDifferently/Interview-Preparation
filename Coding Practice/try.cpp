@@ -1,101 +1,82 @@
-#include <bits/stdc++.h>
+#include <iostream>
 using namespace std;
 
-class binaryNode
+struct Node
 {
     int data;
-    binaryNode *left, *right;
-    public:
-        binaryNode(int data): data(data), left(nullptr), right(nullptr) {}
-        void setData() { this->data = data; }
-        int getData() { return data; }
-        void setLeftNode(binaryNode *left) { this->left = left; }
-        binaryNode* getLeftNode() { return left; }
-        void setRightNode(binaryNode *right) { this->right = right; }
-        binaryNode* getRightNode() { return right; }
+    Node *left, *right;
+    Node(int data): data(data), left(nullptr), right(nullptr) {}
 };
 
-class binaryTree
+int size(Node* root)
 {
-    int m_getDepth(binaryNode* root)
+    if(root == nullptr)
+        return 0;
+    cout << "size == " << root->data << endl;
+    return 1 + size(root->left) + size(root->right);
+}
+
+int rankChar(Node* root, int tar)
+{
+    if(root == nullptr)
+        return 0;
+    cout << root->data << endl;
+    if(tar < root->data)
+        return rankChar(root->left, tar);
+    else if(tar > root->data)
+        return 1 + size(root->left) + rankChar(root->right, tar);
+    return size(root->left);
+}
+
+bool flag = false;
+
+int rankChar2(Node* root, int tar)
+{
+    static int rank = 0;
+    if(root == nullptr)
+        return 0;
+    if(root->data == tar)
+        return rank;
+    cout << root->data << endl;
+    if(root->data < tar)
     {
-        if(root == nullptr)
-            return 0;
-        return 1 + max(m_getDepth(root->getLeftNode()), m_getDepth(root->getRightNode()));
+        rankChar2(root->left, tar);
+        rank++;
+        rankChar2(root->right, tar);
     }
-
-    public:
-        void levelOrderPrint(binaryNode* root)
-        {
-            queue<binaryNode*> que;
-            que.push(root);
-            que.push(nullptr);
-            while(!que.empty())
-            {
-                binaryNode* curr = que.front();
-                if(curr == nullptr)
-                {
-                    cout << endl;
-                    que.pop();
-                    if(!que.empty())  // insert a new null for next level
-                        que.push(nullptr);
-                }
-                else
-                {
-                    que.pop();
-                    cout << curr->getData() << " ";
-                    if(curr->getLeftNode())
-                        que.push(curr->getLeftNode());
-                    if(curr->getRightNode())
-                        que.push(curr->getRightNode());
-                }
-            }
-            return;
-        }
-        binaryNode* buildTreeFromLevelOrder(vector<int> arr)
-        {
-            queue<binaryNode*> que;
-            binaryNode* root = new binaryNode(arr[0]);
-            que.push(root);
-            int idx = 1;
-            while(!que.empty() && idx < arr.size())
-            {
-                binaryNode* curr = que.front();
-                que.pop();
-                if(arr[idx] != -1)
-                {
-                    binaryNode* left = new binaryNode(arr[idx]);
-                    curr->setLeftNode(left);
-                    que.push(left);
-                }
-                idx++;
-                if(arr[idx] != -1)
-                {
-                    binaryNode* right = new binaryNode(arr[idx]);
-                    curr->setRightNode(right);
-                    que.push(right);
-                }
-                idx++;
-            }
-            return root;
-        }
-
-        int getDiameter(binaryNode* root)
-        {
-            if(root == nullptr)
-                return 0;
-            int lengthOfDiameterPassedWithRootNode = m_getDepth(root->getLeftNode()) + m_getDepth(root->getRightNode());
-            int lengthofLeftDiameter = getDiameter(root->getLeftNode());
-            int lengthOfRightDiameter = getDiameter(root->getRightNode());
-            return max(lengthOfDiameterPassedWithRootNode, max(lengthofLeftDiameter, lengthOfRightDiameter));
-        }
-};
-
-int main(void)
+    return rankChar2(root->left, tar);;
+}
+ 
+int main()
 {
-    vector<int > levelOrder{1,2,3,4,5,-1,-1,9,-1,-1,7,10,-1,-1,8};
-    binaryTree binTree;
-    binaryNode* root = binTree.buildTreeFromLevelOrder(levelOrder);
-    cout << binTree.getDiameter(root) << endl;
+    // construct the first tree
+    Node* X = nullptr;
+    X = new Node(6);
+    X->left = new Node(3);
+    X->right = new Node(9);
+    X->left->left = new Node(2);
+    X->left->right = new Node(5);
+    X->right->left = new Node(8);
+    X->right->right = new Node(10);
+    X->right->left->left = new Node(7);
+    X->right->right->right = new Node(11);
+
+    // int res = rankChar(X, 7);
+    // cout << "result = " << res << endl;
+    int res2 = rankChar2(X, 5);
+    cout << "result2 = " << res2 << endl;
+    // construct the second tree
+    Node* Y = nullptr;
+    Y = new Node(6);
+    Y->left = new Node(8);
+    Y->right = new Node(3);
+    Y->left->left = new Node(2);
+    Y->left->right = new Node(4);
+    Y->right->left = new Node(7);
+    Y->right->right = new Node(1);
+    Y->left->left->left = new Node(3);
+    Y->left->right->left = new Node(1);
+    Y->left->right->right = new Node(7);
+
     return 0;
 }

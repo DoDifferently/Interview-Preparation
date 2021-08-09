@@ -5,6 +5,9 @@
         "string": "cpp",
         "string_view": "cpp",
         "random": "cpp",
-        "iosfwd": "cpp"
+        "iosfwd": "cpp",
+        "iostream": "cpp",
+        "ostream": "cpp",
+        "type_traits": "cpp"
     }
 }
