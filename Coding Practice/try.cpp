@@ -1,82 +1,57 @@
 #include <iostream>
 using namespace std;
 
-struct Node
+class Node
 {
-    int data;
-    Node *left, *right;
-    Node(int data): data(data), left(nullptr), right(nullptr) {}
+    public:
+        int data;
+        Node *left, *right;
+        Node(int data): data(data), left(nullptr), right(nullptr) {}
 };
 
-int size(Node* root)
+void flatten(struct Node* root)
 {
-    if(root == nullptr)
-        return 0;
-    cout << "size == " << root->data << endl;
-    return 1 + size(root->left) + size(root->right);
-}
-
-int rankChar(Node* root, int tar)
-{
-    if(root == nullptr)
-        return 0;
-    cout << root->data << endl;
-    if(tar < root->data)
-        return rankChar(root->left, tar);
-    else if(tar > root->data)
-        return 1 + size(root->left) + rankChar(root->right, tar);
-    return size(root->left);
-}
-
-bool flag = false;
-
-int rankChar2(Node* root, int tar)
-{
-    static int rank = 0;
-    if(root == nullptr)
-        return 0;
-    if(root->data == tar)
-        return rank;
-    cout << root->data << endl;
-    if(root->data < tar)
+    if (root == nullptr || (root->left == nullptr && root->right == nullptr))
+        return;
+    // if root->left exists then we have to make it root->right
+    if (root->left)
     {
-        rankChar2(root->left, tar);
-        rank++;
-        rankChar2(root->right, tar);
+        flatten(root->left);	
+        // store the node root->right
+        struct Node* tmpRight = root->right;
+        root->right = root->left;
+        root->left = NULL;
+        // find the position to insert the stored value
+        struct Node* tmp = root->right;
+        while (tmp->right)
+            tmp = tmp->right;
+        // insert the stored value
+        tmp->right = tmpRight;
     }
-    return rankChar2(root->left, tar);;
+    // now call the same function for root->right
+    flatten(root->right);
 }
- 
+
+void inorder(struct Node* root)
+{
+    if (root == nullptr)
+        return;
+    inorder(root->left);
+    cout << root->data << " ";
+    inorder(root->right);
+}
+
 int main()
 {
-    // construct the first tree
-    Node* X = nullptr;
-    X = new Node(6);
-    X->left = new Node(3);
-    X->right = new Node(9);
-    X->left->left = new Node(2);
-    X->left->right = new Node(5);
-    X->right->left = new Node(8);
-    X->right->right = new Node(10);
-    X->right->left->left = new Node(7);
-    X->right->right->right = new Node(11);
+    Node* root = new Node(1);
+    root->left = new Node(2);
+    root->right = new Node(5);
+    root->left->left = new Node(3);
+    root->left->right = new Node(4);
+    root->right->right = new Node(6);
 
-    // int res = rankChar(X, 7);
-    // cout << "result = " << res << endl;
-    int res2 = rankChar2(X, 5);
-    cout << "result2 = " << res2 << endl;
-    // construct the second tree
-    Node* Y = nullptr;
-    Y = new Node(6);
-    Y->left = new Node(8);
-    Y->right = new Node(3);
-    Y->left->left = new Node(2);
-    Y->left->right = new Node(4);
-    Y->right->left = new Node(7);
-    Y->right->right = new Node(1);
-    Y->left->left->left = new Node(3);
-    Y->left->right->left = new Node(1);
-    Y->left->right->right = new Node(7);
-
+    flatten(root);
+    cout << "The Inorder traversal after flattening binary tree ";
+    inorder(root);
     return 0;
 }
