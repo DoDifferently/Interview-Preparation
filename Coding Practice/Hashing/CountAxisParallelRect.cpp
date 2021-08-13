@@ -23,21 +23,20 @@ class Compare
 int CountAxisParallelRectangles(vector<Point>& points, int n)
 {
     int res = 0;
-    // set<Point, Compare> uniquePts;
-    set<Point, Compare> hash;
+    set<Point, Compare> uniquePts;
     for(auto pt: points)
-        hash.insert(pt);
-    for(int i = 0; i < n-1; ++i)
+        uniquePts.insert(pt);
+    for(auto it1 = uniquePts.begin(); it1 != prev(uniquePts.end()); it1++)
     {
-        for(int j = i+1; j < n; ++j)
+        for(auto it2 = next(it1); it2 != uniquePts.end(); it2++)
         {
-            Point pt1 = points[i];
-            Point pt2 = points[j];
+            Point pt1 = *it1;
+            Point pt2 = *it2;
             if(pt1.x == pt2.x or pt1.y == pt2.y)
                 continue;
             Point pt3(pt1.x, pt2.y);
             Point pt4(pt2.x, pt2.y);
-            if(hash.find(pt3) != hash.end() and hash.find(pt4) != hash.end())
+            if(uniquePts.find(pt3) != uniquePts.end() and uniquePts.find(pt4) != uniquePts.end())
                 res++;
         }
     }
