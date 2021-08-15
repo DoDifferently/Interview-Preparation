@@ -45,12 +45,31 @@ class Graph
             }
             return false;
         }
+        bool dfs(int node, int parent)
+        {
+            visited[node] = true;
+            for(auto nbr : l[node])
+            {
+                if(!visited[nbr])
+                {
+                    bool nbrFoundACycle = dfs(nbr,visited,node);
+                    if(nbrFoundACycle)
+                        return true;
+                }
+                //nbr is visited and its not the parent of current node in the current dfs call
+                else if(nbr!=parent)
+                    return true;
+            }
+            return false;
+        }
 };
 
 bool contains_cycle(int n, vector<pair<int,int> > edges)
 {
+    //Graph is single component
     Graph gr(n+1);
     for(auto edge: edges)
         gr.addEdge(edge.first, edge.second, true);
     return gr.bfs(0);
+    // return gr.dfs(0, -1);
 }
