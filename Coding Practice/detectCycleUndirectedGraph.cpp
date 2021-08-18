@@ -7,7 +7,7 @@ class Graph
 {
     int vertices;
     list<int> *edges;
-    vector<int> visited;
+    vector<bool> visited;
     public:
         Graph(int v)
         {
@@ -48,7 +48,7 @@ class Graph
         bool dfs(int node, int parent)
         {
             visited[node] = true;
-            for(auto nbr : l[node])
+            for(auto nbr : edges[node])
             {
                 if(!visited[nbr])
                 {
