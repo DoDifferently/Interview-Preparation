@@ -1,52 +1,82 @@
-/**
- * Definition for singly-linked list.
- * struct ListNode {
- *     int val;
- *     ListNode *next;
- *     ListNode() : val(0), next(nullptr) {}
- *     ListNode(int x) : val(x), next(nullptr) {}
- *     ListNode(int x, ListNode *next) : val(x), next(next) {}
- * };
- */
-/**
- * Definition for a binary tree node.
- * struct TreeNode {
- *     int val;
- *     TreeNode *left;
- *     TreeNode *right;
- *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
- *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
- *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
- * };
- */
-class Solution
-{
-    int countNodes(ListNode* head)
-    {
-        int cnt = 0;
-        while(head)
-        {
-            cnt++;
-            head = head->next;
-        }
-        return cnt;
-    }
+#include <bits/stdc++.h>
+using namespace std;
 
-    TreeNode* buildBST(ListNode*& head, int n)
-    {
-        if(n <= 0)
-            return nullptr;
-        TreeNode* leftSubtree = buildBST(head, n/2);
-        TreeNode* root = new TreeNode(head->val);
-        root->left = leftSubtree;
-        head = head->next;
-        root->right = buildBST(head, n - n/2 - 1);
-        return root;
-    }
-public:
-    TreeNode* sortedListToBST(ListNode* head)
-    {
-        int n = countNodes(head);
-        return buildBST(head, n);
-    }
+template <typename T>
+class customizeStack
+{
+    vector<T> arr;
+    std::mutex mtx;
+    public:
+        customizeStack()
+        {
+
+        }
+        ~customizeStack()
+        {
+
+        }
+        customizeStack(int siz)
+        {
+            arr.reserve(siz);
+        }
+        customizeStack(const customizeStack& other)
+        {
+            arr(other);
+        }
+        void insertAtEnd(T val)
+        {
+            mtx.lock();
+            arr.push_back(val);
+            mtx.unlock();
+        }
+
+        T& operator[](const int index)
+        {
+            return arr[index];
+        }
+
+        T popBack()
+        {
+            mtx.lock();
+            int tmp = arr[arr.size()-1];
+            arr.pop_back();
+            mtx.unlock();
+            return tmp;
+        }
+
+        bool bIsEmpty()
+        {
+            return arr.size() == 0;
+        }
 };
+
+void func1(customizeStack<int>& stk)
+{
+    for(int i = 20; i < 40; ++i)
+        stk.insertAtEnd(i);
+}
+
+void func2(customizeStack<int>& stk)
+{
+    for(int i = 70; i < 90; ++i)
+        stk.insertAtEnd(i);
+}
+
+void func3(customizeStack<int>& stk)
+{
+    for(int i = 20; i < 40; ++i)
+        cout << stk.popBack() << endl;
+}
+
+int main(void)
+{
+    customizeStack<int> stk;
+    thread thread1(func1, std::ref(stk));
+    thread thread2(func2, std::ref(stk));
+    thread thread3(func3, std::ref(stk));
+
+    thread1.join();
+    thread2.join();
+    thread3.join();
+    return 0;
+}
